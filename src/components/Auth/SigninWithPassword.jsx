@@ -1,14 +1,13 @@
 "use client";
 import { EmailIcon, PasswordIcon } from "@/assets/icons";
-import Link from "next/link";
 import React, { useState } from "react";
 import InputGroup from "../FormElements/InputGroup";
 import { Checkbox } from "../FormElements/checkbox";
 
 export default function SigninWithPassword() {
   const [data, setData] = useState({
-    email: process.env.NEXT_PUBLIC_DEMO_USER_MAIL || "",
-    password: process.env.NEXT_PUBLIC_DEMO_USER_PASS || "",
+    email: "",
+    password: "",
     remember: false,
   });
 
@@ -21,11 +20,30 @@ export default function SigninWithPassword() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // You can remove this code block
     setLoading(true);
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL;
+
+    const res = await fetch(`${apiUrl}/api/auth/sign-in`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await res.json();
+
+    if (res.status === 200) {
+      localStorage.setItem("authToken", result.token);
+      localStorage.setItem("user", JSON.stringify(result.user));
+      window.location.href = "/";
+    } else {
+      console.error("Error:", result.message);
+      setLoading(false);
+    }
 
     setTimeout(() => {
       setLoading(false);
@@ -56,7 +74,7 @@ export default function SigninWithPassword() {
         icon={<PasswordIcon />}
       />
 
-      <div className="mb-6 flex items-center justify-between gap-2 py-2 font-medium">
+      {/* <div className="mb-6 flex items-center justify-between gap-2 py-2 font-medium">
         <Checkbox
           label="Remember me"
           name="remember"
@@ -77,7 +95,7 @@ export default function SigninWithPassword() {
         >
           Forgot Password?
         </Link>
-      </div>
+      </div> */}
 
       <div className="mb-4.5">
         <button
@@ -86,7 +104,7 @@ export default function SigninWithPassword() {
         >
           Sign In
           {loading && (
-            <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-t-transparent dark:border-primary dark:border-t-transparent" />
+            <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-t-transparent dark:border-t-transparent" />
           )}
         </button>
       </div>

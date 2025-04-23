@@ -1,5 +1,4 @@
 import Signin from "@/components/Auth/Signin";
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -10,7 +9,7 @@ export const metadata = {
 export default function SignIn() {
   return (
     <>
-      <Breadcrumb pageName="Sign In" />
+      {/* <Breadcrumb pageName="Sign In" /> */}
 
       <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
         <div className="flex flex-wrap items-center">
@@ -46,10 +45,10 @@ export default function SignIn() {
                 Welcome Back!
               </h1>
 
-              <p className="w-full max-w-[375px] font-medium text-dark-4 dark:text-dark-6">
+              {/* <p className="w-full max-w-[375px] font-medium text-dark-4 dark:text-dark-6">
                 Please sign in to your account by completing the necessary
                 fields below
-              </p>
+              </p> */}
 
               <div className="mt-31">
                 <Image

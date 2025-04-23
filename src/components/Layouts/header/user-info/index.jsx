@@ -15,9 +15,15 @@ import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
 
+  const logout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    window.location.href = "/auth/sign-in";
+  };
+
   const USER = {
-    name: "John Smith",
-    email: "johnson@nextadmin.com",
+    name: "Sagar Gohil",
+    email: "superadmin@sagargohil.dev",
     img: "/images/user/user-03.png",
   };
 
@@ -106,7 +112,7 @@ export function UserInfo() {
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6">
           <button
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
-            onClick={() => setIsOpen(false)}
+            onClick={logout}
           >
             <LogOutIcon />
 
