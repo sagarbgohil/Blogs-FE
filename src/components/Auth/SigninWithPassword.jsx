@@ -26,7 +26,7 @@ export default function SigninWithPassword() {
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL;
 
-    const res = await fetch(`${apiUrl}/api/auth/sign-in`, {
+    const res = await fetch(`${apiUrl}/api/auth/sign-in/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
