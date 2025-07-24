@@ -1,7 +1,7 @@
-import { compactFormat } from "@/lib/format-number";
-import { getOverviewData } from "../../fetch";
+import { compactFormat } from "@/lib/formatNumber";
 import { OverviewCard } from "./card";
-import * as icons from "./icons";
+import { getOverviewData } from "../../fetch";
+import { ProductIcon, ProfitIcon, UsersIcon, ViewsIcon } from "@/assets/icons";
 
 export async function OverviewCardsGroup() {
   const { views, profit, products, users } = await getOverviewData();
@@ -14,7 +14,7 @@ export async function OverviewCardsGroup() {
           ...views,
           value: compactFormat(views.value),
         }}
-        Icon={icons.Views}
+        Icon={ViewsIcon}
       />
 
       <OverviewCard
@@ -23,7 +23,7 @@ export async function OverviewCardsGroup() {
           ...profit,
           value: "$" + compactFormat(profit.value),
         }}
-        Icon={icons.Profit}
+        Icon={ProfitIcon}
       />
 
       <OverviewCard
@@ -32,7 +32,7 @@ export async function OverviewCardsGroup() {
           ...products,
           value: compactFormat(products.value),
         }}
-        Icon={icons.Product}
+        Icon={ProductIcon}
       />
 
       <OverviewCard
@@ -41,7 +41,7 @@ export async function OverviewCardsGroup() {
           ...users,
           value: compactFormat(users.value),
         }}
-        Icon={icons.Users}
+        Icon={UsersIcon}
       />
     </div>
   );

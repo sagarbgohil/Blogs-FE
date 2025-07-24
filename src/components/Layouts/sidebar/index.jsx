@@ -5,12 +5,12 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { MenuItem } from "./menuItem";
+import { useSidebarContext } from "./sidebarContext";
+import { ChevronUpIcon, CloseIcon } from "@/assets/icons";
 import { NAV_DATA } from "./data";
-import { ArrowLeftIcon, ChevronUp } from "./icons";
-import { MenuItem } from "./menu-item";
-import { useSidebarContext } from "./sidebar-context";
 
-export function Sidebar() {
+export function Sidebar({ isAdminPage }) {
   const pathname = usePathname();
   const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
   const [expandedItems, setExpandedItems] = useState([]);
@@ -56,22 +56,28 @@ export function Sidebar() {
       <aside
         className={cn(
           "max-w-[290px] overflow-hidden border-r border-gray-200 bg-white transition-[width] duration-200 ease-linear dark:border-gray-800 dark:bg-gray-dark",
-          isMobile ? "fixed bottom-0 top-0 z-50" : "sticky top-0 h-screen",
+          isMobile
+            ? "fixed bottom-0 top-0 z-50"
+            : isAdminPage
+              ? "sticky top-0 h-screen"
+              : "hidden",
           isOpen ? "w-full" : "w-0",
         )}
         aria-label="Main navigation"
         aria-hidden={!isOpen}
         inert={!isOpen}
       >
-        <div className="flex h-full flex-col py-10 pl-[25px] pr-[7px]">
+        <div className="flex h-full flex-col py-2 pl-[25px] pr-[7px]">
           <div className="relative pr-4.5">
-            <Link
-              href={"/"}
-              onClick={() => isMobile && toggleSidebar()}
-              className="px-0 py-2.5 min-[850px]:py-0"
-            >
-              <Logo />
-            </Link>
+            {isMobile && (
+              <Link
+                href={"/"}
+                onClick={() => isMobile && toggleSidebar()}
+                className="px-0 py-2.5 min-[850px]:py-0"
+              >
+                <Logo showMobile={true} />
+              </Link>
+            )}
 
             {isMobile && (
               <button
@@ -80,13 +86,19 @@ export function Sidebar() {
               >
                 <span className="sr-only">Close Menu</span>
 
-                <ArrowLeftIcon className="ml-auto size-7" />
+                <CloseIcon className="ml-auto size-7" />
               </button>
             )}
           </div>
 
+          {isMobile && (
+            <h2 className="m-2 flex items-center gap-2 text-sm font-medium text-dark-4 dark:text-dark-6">
+              <span className="flex-1 border-t border-gray-200 dark:border-gray-700" />
+            </h2>
+          )}
+
           {/* Navigation */}
-          <div className="custom-scrollbar mt-6 flex-1 overflow-y-auto pr-3 min-[850px]:mt-10">
+          <div className="custom-scrollbar flex-1 overflow-y-auto">
             {NAV_DATA.map((section) => (
               <div key={section.label} className="mb-6">
                 <h2 className="mb-5 text-sm font-medium text-dark-4 dark:text-dark-6">
@@ -112,7 +124,7 @@ export function Sidebar() {
 
                               <span>{item.title}</span>
 
-                              <ChevronUp
+                              <ChevronUpIcon
                                 className={cn(
                                   "ml-auto rotate-180 transition-transform duration-200",
                                   expandedItems.includes(item.title) &&

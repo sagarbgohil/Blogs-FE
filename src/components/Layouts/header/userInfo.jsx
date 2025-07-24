@@ -1,29 +1,50 @@
 "use client";
 
-import { ChevronUpIcon } from "@/assets/icons";
+import { LogOutIcon, SettingsIcon } from "@/assets/icons";
 import {
   Dropdown,
   DropdownContent,
   DropdownTrigger,
 } from "@/components/ui/dropdown";
+import { fetchWithAuthV1 } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
+import toast from "react-hot-toast";
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const logout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("user");
-    window.location.href = "/auth/sign-in";
+  const logout = async () => {
+    try {
+      await fetchWithAuthV1("/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify({
+          refreshToken: localStorage.getItem("refreshToken"),
+        }),
+      });
+
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("user");
+
+      // TODO: When google login
+      // await signOut({ callbackUrl: "/auth/sign-in" });
+      window.location.href = "/auth/sign-in";
+    } catch (error) {
+      toast.error("Logout failed. Please try again.");
+    }
   };
 
   const USER = {
     name: "Sagar Gohil",
     email: "superadmin@sagargohil.dev",
+    userName: "superadmin",
     img: "/images/user/user-03.png",
   };
 
@@ -41,18 +62,6 @@ export function UserInfo() {
             width={200}
             height={200}
           />
-          <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-6 max-[1024px]:sr-only">
-            <span>{USER.name}</span>
-
-            <ChevronUpIcon
-              aria-hidden
-              className={cn(
-                "rotate-180 transition-transform",
-                isOpen && "rotate-0",
-              )}
-              strokeWidth={1.5}
-            />
-          </figcaption>
         </figure>
       </DropdownTrigger>
 
@@ -62,38 +71,30 @@ export function UserInfo() {
       >
         <h2 className="sr-only">User information</h2>
 
-        <figure className="flex items-center gap-2.5 px-5 py-3.5">
-          <Image
-            src={USER.img}
-            className="size-12"
-            alt={`Avatar for ${USER.name}`}
-            role="presentation"
-            width={200}
-            height={200}
-          />
+        <Link href={"/profile"} onClick={() => setIsOpen(false)}>
+          <figure className="flex items-center gap-2.5 px-5 py-3.5 hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white">
+            <Image
+              src={USER.img}
+              className="size-12"
+              alt={`Avatar for ${USER.name}`}
+              role="presentation"
+              width={200}
+              height={200}
+            />
 
-          <figcaption className="space-y-1 text-base font-medium">
-            <div className="mb-2 leading-none text-dark dark:text-white">
-              {USER.name}
-            </div>
+            <figcaption className="space-y-1 text-base font-medium">
+              <div className="mb-2 leading-none text-dark dark:text-white">
+                {USER.name}
+              </div>
 
-            <div className="leading-none text-gray-6">{USER.email}</div>
-          </figcaption>
-        </figure>
+              <div className="leading-none text-gray-6">@{USER.userName}</div>
+            </figcaption>
+          </figure>
+        </Link>
 
         <hr className="border-[#E8E8E8] dark:border-dark-3" />
 
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6 [&>*]:cursor-pointer">
-          <Link
-            href={"/profile"}
-            onClick={() => setIsOpen(false)}
-            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
-          >
-            <UserIcon />
-
-            <span className="mr-auto text-base font-medium">View profile</span>
-          </Link>
-
           <Link
             href={"/pages/settings"}
             onClick={() => setIsOpen(false)}
@@ -101,9 +102,7 @@ export function UserInfo() {
           >
             <SettingsIcon />
 
-            <span className="mr-auto text-base font-medium">
-              Account Settings
-            </span>
+            <span className="mr-auto text-base font-medium">Settings</span>
           </Link>
         </div>
 
@@ -114,9 +113,9 @@ export function UserInfo() {
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
             onClick={logout}
           >
-            <LogOutIcon />
+            <LogOutIcon className={cn("size-5", "text-red-500")} />
 
-            <span className="text-base font-medium">Log out</span>
+            <span className="font-medium text-red-500">Log out</span>
           </button>
         </div>
       </DropdownContent>
