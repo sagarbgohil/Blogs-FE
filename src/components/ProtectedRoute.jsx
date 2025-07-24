@@ -8,9 +8,12 @@ export const ProtectedRoute = ({ children }) => {
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("accessToken");
 
     if (!token) {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("user");
       router.replace("/auth/sign-in");
       setIsChecking(false);
     } else {

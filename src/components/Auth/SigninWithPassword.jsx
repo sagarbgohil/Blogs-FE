@@ -2,7 +2,8 @@
 import { EmailIcon, PasswordIcon } from "@/assets/icons";
 import React, { useState } from "react";
 import InputGroup from "../FormElements/InputGroup";
-import { Checkbox } from "../FormElements/checkbox";
+import { fetchV1 } from "@/lib/api";
+import toast from "react-hot-toast";
 
 export default function SigninWithPassword() {
   const [data, setData] = useState({
@@ -24,30 +25,34 @@ export default function SigninWithPassword() {
     e.preventDefault();
     setLoading(true);
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL;
-
-    const res = await fetch(`${apiUrl}/api/auth/sign-in`, {
+    const res = await fetchV1(`/auth/sign-in`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        email: data.email,
+        password: data.password,
+      }),
     });
 
     const result = await res.json();
 
     if (res.status === 200) {
-      localStorage.setItem("authToken", result.token);
-      localStorage.setItem("user", JSON.stringify(result.user));
-      window.location.href = "/";
+      localStorage.setItem("accessToken", result.data.tokens.access);
+      localStorage.setItem("refreshToken", result.data.tokens.refresh);
+      localStorage.setItem("user", JSON.stringify(result.data.user));
+
+      if (["admin", "superadmin"].includes(result.data.user.role)) {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = "/";
+      }
     } else {
-      console.error("Error:", result.message);
-      setLoading(false);
+      toast.error(result.message || "Something went wrong!");
     }
 
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    setLoading(false);
   };
 
   return (
