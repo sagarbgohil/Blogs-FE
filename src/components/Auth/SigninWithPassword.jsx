@@ -2,8 +2,9 @@
 import { EmailIcon, PasswordIcon } from "@/assets/icons";
 import React, { useState } from "react";
 import InputGroup from "../FormElements/InputGroup";
-import { fetchV1 } from "@/lib/api";
 import toast from "react-hot-toast";
+import { fetchProxyV1 } from "@/lib/proxy";
+import { encryptText } from "@/utils/encryption";
 
 export default function SigninWithPassword() {
   const [data, setData] = useState({
@@ -25,23 +26,28 @@ export default function SigninWithPassword() {
     e.preventDefault();
     setLoading(true);
 
-    const res = await fetchV1(`/auth/sign-in`, {
+    const res = await fetchProxyV1(`/auth/sign-in`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({
         email: data.email,
-        password: data.password,
+        password: await encryptText(data.password),
       }),
     });
 
-    const result = await res.json();
-
-    if (res.status === 200) {
-      localStorage.setItem("accessToken", result.data.tokens.access);
-      localStorage.setItem("refreshToken", result.data.tokens.refresh);
-      localStorage.setItem("user", JSON.stringify(result.data.user));
+    if (res.ok) {
+      const result = await res.json();
+      localStorage.setItem(
+        "accessToken",
+        await encryptText(`Bearer ${result.data.tokens.access}`),
+      );
+      localStorage.setItem(
+        "refreshToken",
+        await encryptText(result.data.tokens.refresh),
+      );
+      localStorage.setItem(
+        "user",
+        await encryptText(JSON.stringify(result.data.user)),
+      );
 
       if (["admin", "superadmin"].includes(result.data.user.role)) {
         window.location.href = "/admin";
@@ -49,7 +55,7 @@ export default function SigninWithPassword() {
         window.location.href = "/";
       }
     } else {
-      toast.error(result.message || "Something went wrong!");
+      toast.error("Invalid email or password. Please try again.");
     }
 
     setLoading(false);

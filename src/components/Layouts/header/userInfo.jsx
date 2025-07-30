@@ -6,12 +6,13 @@ import {
   DropdownContent,
   DropdownTrigger,
 } from "@/components/ui/dropdown";
-import { fetchWithAuthV1 } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Notification } from "./notification";
+import { fetchProxyAuthV1 } from "@/lib/proxy";
+import { decryptText } from "@/utils/encryption";
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,12 +20,8 @@ export function UserInfo() {
 
   const logout = async () => {
     try {
-      await fetchWithAuthV1("/auth/logout", {
+      await fetchProxyAuthV1("/auth/logout", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
         body: JSON.stringify({
           refreshToken: localStorage.getItem("refreshToken"),
         }),
@@ -43,19 +40,25 @@ export function UserInfo() {
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        setUser({
-          name: JSON.parse(storedUser).name || "Guest",
-          email: JSON.parse(storedUser).email || "guest@example.com",
-          userName: JSON.parse(storedUser).userName || "guest",
-          profile: JSON.parse(storedUser).profile || "/images/user/user-03.png",
-        });
-      } catch {
-        setUser(null);
+    const data = async () => {
+      return await decryptText(localStorage.getItem("user"));
+    };
+
+    data().then((storedUser) => {
+      if (storedUser) {
+        try {
+          setUser({
+            name: JSON.parse(storedUser).name || "Guest",
+            email: JSON.parse(storedUser).email || "guest@example.com",
+            userName: JSON.parse(storedUser).userName || "guest",
+            profile:
+              JSON.parse(storedUser).profile || "/images/user/user-03.png",
+          });
+        } catch {
+          setUser(null);
+        }
       }
-    }
+    });
   }, []);
 
   return (
