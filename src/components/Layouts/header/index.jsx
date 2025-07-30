@@ -3,7 +3,6 @@
 import { MenuIcon } from "@/assets/icons";
 import Link from "next/link";
 import { useSidebarContext } from "../sidebar/sidebarContext";
-import { Notification } from "./notification";
 import { ThemeToggleSwitch } from "./themeToggleSwitch";
 import { UserInfo } from "./userInfo";
 import { Logo } from "@/components/logo";
@@ -43,14 +42,7 @@ export function Header({ isAdminPage = false, isAuthPage = false }) {
 
       <div className="flex flex-1 items-center justify-end gap-2 min-[375px]:gap-4">
         <ThemeToggleSwitch />
-        {!isAuthPage && (
-          <>
-            <Notification />
-            <div className="shrink-0">
-              <UserInfo />
-            </div>
-          </>
-        )}
+        {!isAuthPage && <UserInfo />}
       </div>
     </header>
   );

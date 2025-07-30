@@ -11,9 +11,10 @@ import "jsvectormap/dist/jsvectormap.css";
 import { Header } from "@/components/Layouts/header";
 import NextTopLoader from "nextjs-toploader";
 import { Providers } from "./providers";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { usePathname } from "next/navigation";
 import { Toaster } from "react-hot-toast";
+import { Footer } from "@/components/Layouts/footer.js";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -23,7 +24,7 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body className="bg-white text-black dark:bg-gray-dark dark:text-white">
         <Providers>
           <NextTopLoader color="#5750F1" showSpinner={false} />
           <Toaster
@@ -53,21 +54,22 @@ export default function RootLayout({ children }) {
           />
           <Header isAuthPage={isAuthPage} isAdminPage={isAdminPage} />
 
-          {isAuthPage ? (
-            <main className="min-h-screen p-4 md:p-6 2xl:p-10">{children}</main>
-          ) : (
-            <ProtectedRoute>
-              <div className="flex min-h-screen">
+          <div className="flex min-h-screen bg-gray-100 dark:bg-[#020d1a]">
+            {isAuthPage ? (
+              <main className="isolate mx-auto w-full max-w-screen-2xl flex-1 p-4 2xl:p-10">
+                {children}
+              </main>
+            ) : (
+              <ProtectedRoute>
                 <Sidebar isAdminPage={isAdminPage} />
+                <main className="isolate mx-auto w-full max-w-screen-2xl flex-1 p-4 2xl:p-10">
+                  {children}
+                </main>
+              </ProtectedRoute>
+            )}
+          </div>
 
-                <div className="w-full bg-gray-2 dark:bg-[#020d1a]">
-                  <main className="isolate mx-auto w-full max-w-screen-2xl overflow-hidden p-4 md:p-6 2xl:p-10">
-                    {children}
-                  </main>
-                </div>
-              </div>
-            </ProtectedRoute>
-          )}
+          <Footer />
         </Providers>
       </body>
     </html>

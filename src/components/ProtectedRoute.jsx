@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 export const ProtectedRoute = ({ children }) => {
   const router = useRouter();
-  const [isChecking, setIsChecking] = useState(true);
+  const [isAllowed, setIsAllowed] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -15,17 +15,16 @@ export const ProtectedRoute = ({ children }) => {
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
       router.replace("/auth/sign-in");
-      setIsChecking(false);
     } else {
-      setIsChecking(false);
+      setIsAllowed(true);
     }
-  }, []);
+  }, [router]);
 
-  if (isChecking) {
+  if (!isAllowed) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen w-full items-center justify-center text-sm text-gray-700 dark:text-white">
         Loading
-        <span className="m-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-t-transparent p-2 dark:border-t-transparent" />
+        <span className="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-gray-500 border-t-transparent" />
       </div>
     );
   }
