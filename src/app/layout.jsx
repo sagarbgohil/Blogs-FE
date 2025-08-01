@@ -19,12 +19,12 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 export default function RootLayout({ children }) {
   const pathname = usePathname();
 
-  const isAuthPage = pathname.startsWith("/auth");
+  const isAuthPage = pathname.startsWith("/onboard");
   const isAdminPage = pathname.startsWith("/admin");
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-white text-black dark:bg-gray-dark dark:text-white">
+      <body className="flex min-h-screen flex-col bg-white text-black dark:bg-gray-dark dark:text-white">
         <Providers>
           <NextTopLoader color="#5750F1" showSpinner={false} />
           <Toaster
@@ -52,9 +52,10 @@ export default function RootLayout({ children }) {
               },
             }}
           />
+
           <Header isAuthPage={isAuthPage} isAdminPage={isAdminPage} />
 
-          <div className="flex min-h-screen bg-gray-100 dark:bg-[#020d1a]">
+          <div className="flex flex-1 bg-gray-100 dark:bg-[#020d1a]">
             {isAuthPage ? (
               <main className="isolate mx-auto w-full max-w-screen-2xl flex-1 p-4 2xl:p-10">
                 {children}

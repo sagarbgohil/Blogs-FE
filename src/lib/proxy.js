@@ -1,4 +1,5 @@
 import { encryptText } from "@/utils/encryption";
+import toast from "react-hot-toast";
 
 export const fetchProxyAuthV1 = async (url, options = {}) => {
   const accessToken = localStorage.getItem("accessToken");
@@ -53,7 +54,8 @@ export const fetchProxyAuthV1 = async (url, options = {}) => {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
-      window.location.href = "/auth/sign-in";
+      window.location.href = "/onboard"; // Redirect to login page
+      toast.error("Session expired. Please log in again.");
       return;
     }
   }

@@ -14,7 +14,7 @@ export const ProtectedRoute = ({ children }) => {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
-      router.replace("/auth/sign-in");
+      router.replace("/onboard");
     } else {
       setIsAllowed(true);
     }

@@ -33,7 +33,8 @@ export function UserInfo() {
 
       // TODO: When google login
       // await signOut({ callbackUrl: "/auth/sign-in" });
-      window.location.href = "/auth/sign-in";
+      window.location.href = "/onboard";
+      toast.success("Logged out successfully!");
     } catch (error) {
       toast.error("Logout failed. Please try again.");
     }
@@ -136,7 +137,7 @@ export function UserInfo() {
                   You are not signed in.
                 </p>
                 <Link
-                  href="/auth/sign-in"
+                  href="/onboard"
                   className="inline-block rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
                 >
                   Sign In

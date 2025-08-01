@@ -1,3 +1,5 @@
+import toast from "react-hot-toast";
+
 export const fetchV1 = async (url, options = {}) => {
   const isFormData =
     (typeof FormData !== "undefined" && options.body instanceof FormData) ||
@@ -73,7 +75,8 @@ export const fetchWithAuthV1 = async (url, options = {}) => {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
-      window.location.href = "/auth/sign-in";
+      window.location.href = "/onboard"; // Redirect to login page
+      toast.error("Session expired. Please log in again.");
       return;
     }
   }

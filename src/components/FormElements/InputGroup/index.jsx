@@ -2,60 +2,84 @@ import { cn } from "@/lib/utils";
 import { useId } from "react";
 
 const InputGroup = ({
-  className,
-  label,
-  type,
-  placeholder,
-  required,
-  disabled,
-  active,
+  className = "",
+  label = "",
+  type = "text",
+  name = "",
+  placeholder = "",
+  required = false,
+  disabled = false,
+  value,
+  defaultValue,
+  error,
   handleChange,
+  active,
   icon,
-  ...props
+  iconPosition = "right",
+  height = "md",
+  fileStyleVariant,
 }) => {
   const id = useId();
 
   return (
-    <div className={className}>
-      <label
-        htmlFor={id}
-        className="text-body-sm font-medium text-dark dark:text-white"
-      >
-        {label}
-        {required && <span className="ml-1 select-none text-red">*</span>}
-      </label>
+    <div className={cn("mb-4", className)}>
+      {label && (
+        <label
+          htmlFor={id}
+          className="mb-1 block text-sm font-medium text-dark dark:text-white"
+        >
+          {label}
+          {required && <span className="ml-1 text-red-500">*</span>}
+        </label>
+      )}
 
       <div
         className={cn(
-          "relative mt-3 [&_svg]:absolute [&_svg]:top-1/2 [&_svg]:-translate-y-1/2",
-          props.iconPosition === "left"
-            ? "[&_svg]:left-4.5"
-            : "[&_svg]:right-4.5",
+          "relative",
+          icon && "flex items-center",
+          iconPosition === "left" && "flex-row-reverse",
         )}
       >
         <input
           id={id}
+          name={name}
           type={type}
-          name={props.name}
+          value={value}
+          defaultValue={defaultValue}
           placeholder={placeholder}
           onChange={handleChange}
-          value={props.value}
-          defaultValue={props.defaultValue}
-          className={cn(
-            "w-full rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition focus:border-primary disabled:cursor-default disabled:bg-gray-2 data-[active=true]:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary dark:disabled:bg-dark dark:data-[active=true]:border-primary",
-            type === "file"
-              ? getFileStyles(props.fileStyleVariant)
-              : "px-5.5 py-3 text-dark placeholder:text-dark-6 dark:text-white",
-            props.iconPosition === "left" && "pl-12.5",
-            props.height === "sm" && "py-2.5",
-          )}
           required={required}
           disabled={disabled}
           data-active={active}
+          className={cn(
+            "w-full rounded-lg border border-stroke bg-transparent px-4 py-3 text-sm text-dark outline-none transition placeholder:text-dark-6 focus:border-primary disabled:cursor-not-allowed disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:placeholder:text-dark-6 dark:focus:border-primary dark:disabled:bg-dark",
+            icon && iconPosition === "left" && "pl-12",
+            icon && iconPosition === "right" && "pr-12",
+            height === "sm" && "py-2.5",
+            type === "file" && getFileStyles(fileStyleVariant),
+            error && "border-red-500 focus:border-red-500",
+          )}
+          aria-invalid={!!error}
+          aria-describedby={error ? `${id}-error` : undefined}
         />
 
-        {icon}
+        {icon && (
+          <span
+            className={cn(
+              "absolute top-1/2 -translate-y-1/2 text-dark-4 dark:text-dark-5",
+              iconPosition === "left" ? "left-4" : "right-4",
+            )}
+          >
+            {icon}
+          </span>
+        )}
       </div>
+
+      {error && (
+        <p id={`${id}-error`} className="mt-1 text-sm text-red-500">
+          {error}
+        </p>
+      )}
     </div>
   );
 };
